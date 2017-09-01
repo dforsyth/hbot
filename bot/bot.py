@@ -5,6 +5,7 @@ import time
 
 from slackclient import SlackClient
 
+
 class Bot(object):
     def __init__(self, username, token, icon):
         self._username = username
@@ -19,7 +20,7 @@ class Bot(object):
         logging.info("Connecting...")
         if not self._slack.rtm_connect():
             raise Exception("Failed to connect to Slack.")
-        
+
         resp = self._slack_api_call("api.test")
         if not response_ok(resp):
             raise Exception("API test failed.")
@@ -62,15 +63,20 @@ class Bot(object):
         return event_dict
 
     def send_message(self, channel, message, attachments=None):
-        resp = self._slack_api_call("chat.postMessage",
-                text=message, channel=channel, username=self._username,
-                icon_url=self._icon, attachments=attachments)
+        resp = self._slack_api_call(
+            "chat.postMessage",
+            text=message,
+            channel=channel,
+            username=self._username,
+            icon_url=self._icon,
+            attachments=attachments)
         if not response_ok(resp):
             logging.warning("Failed to send message: " + json.dumps(resp))
 
     def register_event_handler(self, typ, handler):
-        self._event_handlers[typ].append(handler) 
+        self._event_handlers[typ].append(handler)
         handler.on_register(self)
+
 
 def response_ok(response):
     return response and 'ok' in response and response['ok']

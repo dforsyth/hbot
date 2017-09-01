@@ -8,6 +8,7 @@ import requests
 
 from bot.handler import EventHandler, MessageEventHandler
 
+
 class CommandEventHandler(EventHandler):
     def __init__(self, name, help=""):
         self._name = name
@@ -36,6 +37,7 @@ class CommandEventHandler(EventHandler):
     def help(self):
         return self._help
 
+
 class StocksCommandHandler(CommandEventHandler):
     def handle_cmd(self, command, arguments, user, channel, bot):
         if len(arguments) == 0:
@@ -45,14 +47,15 @@ class StocksCommandHandler(CommandEventHandler):
         output = ""
         try:
             quotes = getQuotes(str(want))
-            output = ", ".join(
-                    [q["StockSymbol"] + ": " + q["LastTradePrice"]
-                        for q in quotes])
+            output = ", ".join([
+                q["StockSymbol"] + ": " + q["LastTradePrice"] for q in quotes
+            ])
         except Exception as e:
             logging.warning("StocksCommandHandler: " + str(e))
             output = "Something went wrong: " + str(e)
 
         bot.send_message(channel, output)
+
 
 class BangCommandHandler(CommandEventHandler):
     def __init__(self, name, help=""):
@@ -61,12 +64,13 @@ class BangCommandHandler(CommandEventHandler):
     def handle_cmd(self, command, arguments, user, channel, bot):
         bot.send_message(channel, "bang bang")
 
+
 class CommandsCommandHandler(CommandEventHandler):
     def __init__(self, name, message_event_handler, help=""):
         super(CommandsCommandHandler, self).__init__(name, help=help)
         if type(message_event_handler) != MessageEventHandler:
             raise Exception(
-                    "message_event_handler must be MessageEventHandler")
+                "message_event_handler must be MessageEventHandler")
         self._message_event_handler = message_event_handler
 
     def handle_cmd(self, command, arguments, user, channel, bot):

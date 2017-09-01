@@ -5,10 +5,11 @@ from bot.bot import Bot
 from h import database
 from bot.handler import MessageEventHandler
 from handlers import (StocksCommandHandler, BangCommandHandler,
-    CommandsCommandHandler)
+                      CommandsCommandHandler)
 
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
-        
+
+
 class HBot(Bot):
     def __init__(self, username, token, icon, db):
         super(HBot, self).__init__(username, token, icon)
@@ -27,18 +28,23 @@ class HBot(Bot):
     def register_model(self, model):
         self._models.append(model)
 
+
 def main():
     logging.basicConfig(level=logging.DEBUG)
 
-    bot = HBot(os.environ.get("H_BOT_NAME", "hbot"), SLACK_BOT_TOKEN,
-            "http://i.imgur.com/gLeA41v.jpg", database)
+    bot = HBot(
+        os.environ.get("H_BOT_NAME", "hbot"), SLACK_BOT_TOKEN,
+        "http://i.imgur.com/gLeA41v.jpg", database)
     message_handler = MessageEventHandler()
     message_handler.register_command('!',
-            StocksCommandHandler("stocks", help="ticker quotes"))
+                                     StocksCommandHandler(
+                                         "stocks", help="ticker quotes"))
     message_handler.register_command('!',
-            BangCommandHandler("bang", help="pulse check"))
+                                     BangCommandHandler(
+                                         "bang", help="pulse check"))
     message_handler.register_command('!',
-            CommandsCommandHandler("help", message_handler, help="this"))
+                                     CommandsCommandHandler(
+                                         "help", message_handler, help="this"))
 
     bot.register_event_handler('message', message_handler)
 

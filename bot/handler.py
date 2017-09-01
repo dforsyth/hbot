@@ -1,6 +1,7 @@
 from collections import defaultdict
 import logging
 
+
 class EventHandler(object):
     def on_register(self, bot):
         pass
@@ -10,6 +11,7 @@ class EventHandler(object):
 
     def handle(self, obj, bot):
         pass
+
 
 class MessageEventHandler(EventHandler):
     def __init__(self):
