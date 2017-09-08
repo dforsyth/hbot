@@ -1,10 +1,13 @@
 certifi==2017.7.27.1
 chardet==3.0.4
-googlefinance==0.7
 idna==2.6
 peewee==2.10.1
+pytz==2017.2
 requests==2.18.4
+simplejson==3.11.1
 six==1.10.0
 slackclient==1.0.9
+sqlite3==0.0.0
 urllib3==1.22
 websocket-client==0.44.0
+yahoo-finance==1.4.0

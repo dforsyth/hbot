@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 
-from googlefinance import getQuotes
+from yahoo_finance import Share
 from peewee import CharField, DateTimeField, ForeignKeyField
 import requests
 
@@ -43,19 +43,27 @@ class StocksCommandHandler(CommandEventHandler):
         if len(arguments) == 0:
             return
 
-        want = ','.join(arguments)
         output = ""
-        try:
-            quotes = getQuotes(str(want))
-            output = ", ".join([
-                q["StockSymbol"] + ": " + q["LastTradePrice"] for q in quotes
-            ])
-        except Exception as e:
-            logging.warning("StocksCommandHandler: " + str(e))
-            output = "Something went wrong: " + str(e)
+        for arg in arguments:
+            if len(output) > 0:
+                output += "\n"
+            output += self._fetch_and_output(arg)
 
         bot.send_message(channel, output)
 
+    def _fetch_and_output(self, symbol):
+        sym = symbol.upper()
+        try:
+            share = Share(sym)
+        except Exception as e:
+            logging.warning("StocksCommandHandler: " + str(e))
+            return sym + ": Something went wrong: " + str(e)
+
+        if share is None or share.get_price() is None:
+            return "Can't find info for '" + sym + "'"
+
+        return (sym + " - " + share.get_name() + ": " + share.get_price() +
+                " (" + share.get_change() + ")")
 
 class BangCommandHandler(CommandEventHandler):
     def __init__(self, name, help=""):
