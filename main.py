@@ -5,7 +5,7 @@ from bot.bot import Bot
 from h import database
 from bot.handler import MessageEventHandler
 from handlers import (StocksCommandHandler, BangCommandHandler,
-                      CommandsCommandHandler)
+                      CommandsCommandHandler, CoinCommandHandler)
 
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 
@@ -45,6 +45,7 @@ def main():
     message_handler.register_command('!',
                                      CommandsCommandHandler(
                                          "help", message_handler, help="this"))
+    message_handler.register_command('!', CoinCommandHandler("coin"))
 
     bot.register_event_handler('message', message_handler)
 

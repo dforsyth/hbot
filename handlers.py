@@ -1,10 +1,12 @@
 import datetime
+from decimal import Decimal
 import json
 import logging
 
 from yahoo_finance import Share
 from peewee import CharField, DateTimeField, ForeignKeyField
 import requests
+import gdax
 
 from bot.handler import EventHandler, MessageEventHandler
 
@@ -65,6 +67,7 @@ class StocksCommandHandler(CommandEventHandler):
         return (sym + " - " + share.get_name() + ": " + share.get_price() +
                 " (" + share.get_change() + ")")
 
+
 class BangCommandHandler(CommandEventHandler):
     def __init__(self, name, help=""):
         super(BangCommandHandler, self).__init__(name, help=help)
@@ -87,4 +90,40 @@ class CommandsCommandHandler(CommandEventHandler):
         output = ""
         for _, command in commands.items():
             output += prefix + command.name + ": " + command.help + "\n"
+        bot.send_message(channel, output)
+
+
+class CoinCommandHandler(CommandEventHandler):
+    def __init__(self, name):
+        super(CoinCommandHandler, self).__init__(
+            name, help="Show currency prices (from GDAX)")
+        self.client = gdax.PublicClient()
+
+    def handle_cmd(self, command, arguments, user, channel, bot):
+        output = ""
+        if not arguments or 'supported' in arguments:
+            try:
+                r = self.client.get_products()
+                output += "Supported currencies:\n"
+                for c in r:
+                    output += c["id"] + "\n"
+            except Exception as e:
+                output += "Error: " + str(e) + "\n"
+                logging.warning("CoinCommandHandler: " + str(e))
+        else:
+            for arg in arguments:
+                try:
+                    currency = arg.upper()
+                    r = self.client.get_product_ticker(product_id=currency)
+                    if "message" in r and r["message"] == "Not Found":
+                        output += currency + ": Not Found.\n"
+                    else:
+                        output += (
+                            currency + ": " +
+                            str(Decimal(r["price"]).quantize(Decimal("1.00")))
+                            + "\n")
+                except Exception as e:
+                    output += currency + ": Error (" + str(e) + ")\n"
+                    logging.warning("CoinCommadHandler: " + str(e))
+
         bot.send_message(channel, output)
