@@ -13,6 +13,7 @@ six==1.10.0
 slackclient==1.0.9
 sqlite3==0.0.0
 urllib3==1.22
+weather-api==0.0.3
 websocket-client==0.40.0
 yahoo-finance==1.4.0
 yapf==0.17.0

@@ -7,6 +7,7 @@ from yahoo_finance import Share
 from peewee import CharField, DateTimeField, ForeignKeyField
 import requests
 import gdax
+from weather import Weather
 
 from bot.handler import EventHandler, MessageEventHandler
 
@@ -127,3 +128,35 @@ class CoinCommandHandler(CommandEventHandler):
                     logging.warning("CoinCommadHandler: " + str(e))
 
         bot.send_message(channel, output)
+
+
+class WeatherCommandHandler(CommandEventHandler):
+    def __init__(self, name):
+        super(WeatherCommandHandler, self).__init__(
+            name, help="Show weather for a place")
+        self.client = Weather()
+
+    def handle_cmd(self, command, arguments, user, channel, bot):
+        if not arguments:
+            bot.send_message(channel, "Give a location.")
+            return
+
+        place = " ".join(arguments)
+
+        try:
+            weather = self.client.lookup_by_location(place)
+
+            location = weather.location()
+            condition = weather.condition()
+            forecast = weather.forecast()[0]
+            output = (
+                "Weather for " + location["city"] + ", " + location["region"] +
+                " (" + location["country"] + ")" + " - ")
+            output += ("Current: " + condition["text"] + ", " +
+                       condition["temp"] + " - ")
+            output += ("Forecast: " + forecast.high() + "/" + forecast.low() +
+                       ", " + forecast.text())
+
+            bot.send_message(channel, output)
+        except Exception:
+            bot.send_message(channel, "Can't dump weather for " + place)
