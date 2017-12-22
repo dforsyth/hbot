@@ -46,7 +46,7 @@ def main():
     message_handler.register_command('!',
                                      CommandsCommandHandler(
                                          "help", message_handler, help="this"))
-    message_handler.register_command('!', CoinCommandHandler("coin"))
+    message_handler.register_command('!', CoinCommandHandler("crypto"))
     message_handler.register_command('!', WeatherCommandHandler("weather"))
 
     bot.register_event_handler('message', message_handler)
