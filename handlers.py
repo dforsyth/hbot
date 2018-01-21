@@ -3,11 +3,11 @@ from decimal import Decimal
 import json
 import logging
 
-from yahoo_finance import Share
 from peewee import CharField, DateTimeField, ForeignKeyField
 import requests
 import gdax
 from weather import Weather
+from pyEX import api
 
 from bot.handler import EventHandler, MessageEventHandler
 
@@ -57,16 +57,13 @@ class StocksCommandHandler(CommandEventHandler):
     def _fetch_and_output(self, symbol):
         sym = symbol.upper()
         try:
-            share = Share(sym)
+            quote = api.quote(sym)
         except Exception as e:
             logging.warning("StocksCommandHandler: " + str(e))
             return sym + ": Something went wrong: " + str(e)
 
-        if share is None or share.get_price() is None:
-            return "Can't find info for '" + sym + "'"
-
-        return (sym + " - " + share.get_name() + ": " + share.get_price() +
-                " (" + share.get_change() + ")")
+        return (sym + " - " + quote['symbol'] + ": " +
+                str(quote['latestPrice']) + " (" + str(quote['change']) + ")")
 
 
 class BangCommandHandler(CommandEventHandler):
