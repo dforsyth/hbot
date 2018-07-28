@@ -26,7 +26,6 @@ requests==2.13.0
 simplegeneric==0.8.1
 six==1.10.0
 slackclient==1.0.9
-sqlite3==0.0.0
 traitlets==4.3.2
 urllib3==1.22
 wcwidth==0.1.7
