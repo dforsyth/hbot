@@ -8,7 +8,7 @@ from peewee import CharField, DateTimeField, ForeignKeyField
 import requests
 import cbpro
 from weather import Weather
-from pyEX import api
+import pyEX as api
 
 from bot.handler import EventHandler, MessageEventHandler
 
