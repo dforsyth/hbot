@@ -1,1 +1,0 @@
-build --verbose_failures --python_path=/usr/local/bin/python3
