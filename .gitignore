@@ -101,4 +101,4 @@ ENV/
 #databasket
 *.db
 
-/bazel-*
+fed.json

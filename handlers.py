@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 import json
 import logging
+import random
 
 from peewee import CharField, DateTimeField, ForeignKeyField
 import requests
@@ -157,3 +158,27 @@ class WeatherCommandHandler(CommandEventHandler):
             bot.send_message(channel, output)
         except Exception:
             bot.send_message(channel, "Can't dump weather for " + place)
+
+
+class TheFedHandler(CommandEventHandler):
+    def _load_conf(self, location):
+        with open(location) as conf_data:
+            return json.load(conf_data)
+
+    def __init__(self, conf_file):
+        self.conf = self._load_conf(conf_file)
+        super().__init__(self.conf['name'],
+                         help="In the spirit of our favorite fed")
+
+    def handle_cmd(self, command, arguments, user, channel, bot):
+        phrase = random.choice(self.conf['phrases'])
+        image = random.choice(self.conf['images'])
+
+        attachment = {
+            "text": phrase,
+            "image_url": image,
+        }
+
+        bot.send_message(channel, "", attachments=[attachment])
+
+
