@@ -55,7 +55,7 @@ func (c *HelpCommand) OnMessage(_ string, args []string, _, channel string, bot 
 type BangCommand struct{}
 
 func (c *BangCommand) Name() string {
-	return "bang"
+	return "bang bang"
 }
 
 func (c *BangCommand) Help() string {
