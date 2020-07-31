@@ -73,17 +73,17 @@ type FedCommand struct {
 	Phrases []string `json:"phrases"`
 }
 
-func NewFedCommand(fedFile string) (*FedCommand, error) {
+func NewFedCommand(fedFile string) ([]FedCommand, error) {
 	f, err := os.Open(fedFile)
 	if err != nil {
 		return nil, err
 	}
 	dec := json.NewDecoder(f)
-	fed := &FedCommand{}
-	if err := dec.Decode(&fed); err != nil {
+	feds := []FedCommand{}
+	if err := dec.Decode(&feds); err != nil {
 		return nil, err
 	}
-	return fed, nil
+	return feds, nil
 }
 
 func (c *FedCommand) Name() string {
@@ -281,12 +281,14 @@ func main() {
 	flag.Parse()
 
 	if *fedfile != "" {
-		fc, err := NewFedCommand(*fedfile)
+		fcs, err := NewFedCommand(*fedfile)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		log.Printf("registering fedcommand with fedfile %s", *fedfile)
-		ch.RegisterCommand(fc)
+		log.Printf("registering fedcommands with fedfile %s", *fedfile)
+		for _, fc := range fcs {
+			ch.RegisterCommand(&fc)
+		}
 	}
 
 	b.RegisterHandler(ch)
